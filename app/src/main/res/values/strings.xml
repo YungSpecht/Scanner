@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Scanner</string>
+    <string name="top_bar_name">Document Scanner</string>
+    <string name="scan_new_document">Scan New Document</string>
+    <string name="scanned_documents">Scanned Documents</string>
+    <string name="document_details">Document Details</string>
+    <string name="edit_title">Edit Title</string>
+    <string name="title">Title</string>
+    <string name="extracted_bill_amount">Extracted Bill Amount</string>
+    <string name="document_scan">Document Scan</string>
+</resources>
