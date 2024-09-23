@@ -3,20 +3,27 @@ package com.example.scanner.nav
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.scanner.MainActivity
-import com.example.scanner.ui.DocumentScreen
-import com.example.scanner.ui.MainScreen
+import com.example.scanner.ui.detailscreen.DocumentScreen
+import com.example.scanner.ui.mainscreen.MainScreen
+import com.example.scanner.ui.mainscreen.MainScreenViewModel
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanner
-import data.SampleData
 
 
 @Composable
-fun AppNavGraph(navController: NavHostController, scanner: GmsDocumentScanner, scannerLauncher: ActivityResultLauncher<IntentSenderRequest>, activity: MainActivity) {
+fun AppNavGraph(navController: NavHostController) {
+
+    val viewModel: MainScreenViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsState()
+
     NavHost(
         navController = navController,
         startDestination = NavRoutes.MAIN // Starting screen is MainScreen
@@ -26,24 +33,17 @@ fun AppNavGraph(navController: NavHostController, scanner: GmsDocumentScanner, s
             MainScreen(
                 onDocumentClick = { id ->
                     navController.navigate(NavRoutes.DOCUMENT + "/$id")
-                },
-                documents = SampleData.getSampleData(),
-                scanner = scanner,
-                scannerLauncher = scannerLauncher,
-                activity = activity
+                }
             )
         }
 
         // Document Screen
         composable(
             route = NavRoutes.DOCUMENT + "/{id}",
-            arguments = listOf(navArgument("id") { type = NavType.IntType })
+            arguments = listOf(navArgument("id") { type = NavType.StringType })
         ) {
-            val id = it.arguments?.getInt("id")
-            val document = SampleData.getSampleData().find { it.id == id }
-            if (document != null) {
-                DocumentScreen(document)
-            }
+            val id = it.arguments?.getString("id")
+            DocumentScreen(id)
         }
 
     }

@@ -1,4 +1,0 @@
-package data
-
-interface DataRepository {
-}

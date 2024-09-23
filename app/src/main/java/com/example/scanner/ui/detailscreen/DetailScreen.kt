@@ -1,4 +1,4 @@
-package com.example.scanner.ui
+package com.example.scanner.ui.detailscreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -8,13 +8,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -22,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -30,13 +25,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.scanner.R
 import data.Document
 import java.net.URI
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DocumentScreen(document: Document, modifier: Modifier = Modifier) {
+fun DetailScreen(documentId: String, modifier: Modifier = Modifier) {
+
+    val viewModel: DetailScreenViewModel = hiltViewModel()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -120,5 +118,5 @@ fun DocumentScreen(document: Document, modifier: Modifier = Modifier) {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun DocumentScreenPreview() {
-    DocumentScreen(Document(22,"Test Document", "5000€", URI("https://www.google.com")))
+    DocumentScreen(Document("22","Test Document", "5000€", URI("https://www.google.com")))
 }
