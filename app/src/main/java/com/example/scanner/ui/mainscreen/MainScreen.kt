@@ -3,6 +3,7 @@ package com.example.scanner.ui.mainscreen
 
 import android.app.Activity
 import android.app.Activity.RESULT_OK
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
@@ -26,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -41,7 +43,6 @@ import com.example.scanner.MainActivity
 import com.example.scanner.R
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanner
 import data.Document
-import java.net.URI
 import dagger.hilt.android.lifecycle.HiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -53,7 +54,7 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(onDocumentClick: (String) -> Unit, modifier: Modifier = Modifier) {
+fun MainScreen(onDocumentClick: (Long) -> Unit, onNewDocumentScanned: (Uri) -> Unit, modifier: Modifier = Modifier) {
 
     val viewModel: MainScreenViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
@@ -67,14 +68,27 @@ fun MainScreen(onDocumentClick: (String) -> Unit, modifier: Modifier = Modifier)
             val result = GmsDocumentScanningResult.fromActivityResultIntent(result.data)
             if (result != null) {
                 result.getPages()?.let { pages ->
-                    for (page in pages) {
-                        val imageUri = pages.get(0).getImageUri()
-                    }
+                    val imageUri = pages.get(0).getImageUri()
+                    // After scanning, navigate to detail screen with the scanned document
+                    onNewDocumentScanned(imageUri)
                 }
             }
         }
-
     }
+
+    val options = GmsDocumentScannerOptions.Builder()
+        .setGalleryImportAllowed(true)
+        .setPageLimit(1)
+        .setResultFormats(RESULT_FORMAT_JPEG)
+        .setScannerMode(SCANNER_MODE_FULL)
+        .build()
+
+    val scanner = GmsDocumentScanning.getClient(options)
+
+    LaunchedEffect(Unit) {
+        viewModel.loadDocuments()
+    }
+
 
     Scaffold(
         topBar = {
@@ -96,14 +110,6 @@ fun MainScreen(onDocumentClick: (String) -> Unit, modifier: Modifier = Modifier)
             FloatingActionButton(
                 // onClick = onFABClick
                 onClick = {
-                    val options = GmsDocumentScannerOptions.Builder()
-                        .setGalleryImportAllowed(true)
-                        .setPageLimit(1)
-                        .setResultFormats(RESULT_FORMAT_JPEG)
-                        .setScannerMode(SCANNER_MODE_FULL)
-                        .build()
-
-                    val scanner = GmsDocumentScanning.getClient(options)
                     scanner.getStartScanIntent(activity!!)
                         .addOnSuccessListener { intentSender ->
                             scannerLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
@@ -160,16 +166,3 @@ fun DocumentCard(doc: Document, onClick: () -> Unit, modifier: Modifier = Modifi
 
 
 
-@Preview
-@Composable
-fun DocumentCardPreview() {
-    DocumentCard(Document("55", "Beispieel", "200€", URI("https://www.google.com")), {})
-}
-
-/*
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun MainScreenPreview() {
-    MainScreen(SampleData.getSampleData(), {}, {})
-}
-*/

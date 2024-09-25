@@ -54,6 +54,13 @@ android {
 }
 
 dependencies {
+
+    implementation(libs.play.services.mlkit.text.recognition)
+    implementation(libs.androidx.room.ktx)
+    kapt("androidx.room:room-compiler:2.6.1")
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor(libs.androidx.room.compiler)
+    implementation (libs.coil.compose)
     implementation (libs.hilt.navigation.compose)
     implementation (libs.androidx.navigation.compose.v281)
     implementation(libs.androidx.hilt.navigation.compose)

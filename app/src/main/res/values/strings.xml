@@ -7,5 +7,15 @@
     <string name="edit_title">Edit Title</string>
     <string name="title">Title</string>
     <string name="extracted_bill_amount">Extracted Bill Amount</string>
+    <string name="edit_bill_amount">Edit Bill Amount</string>
+    <string name="no_document_image">No document Image</string>
     <string name="document_scan">Document Scan</string>
+    <string name="save">Save</string>
+    <string name="save_document">Save Document</string>
+    <string name="delete_document">Delete Document</string>
+    <string name="delete_document_confirmation">Are you sure you want to delete this document?</string>
+    <string name="confirm_deletion">Confirm Deletion</string>">
+    <string name="delete">Delete</string>">
+    <string name="cancel">Cancel</string>
+
 </resources>

@@ -1,10 +1,13 @@
 package data
 
-import java.net.URI
+import android.net.Uri
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
+@Entity(tableName = "documents")
 data class Document(
-    var id: String,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0L,
     var title: String,
     var billAmount: String,
-    var imageUri: URI
+    var imageUri: String
 )

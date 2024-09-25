@@ -29,7 +29,7 @@ class MainScreenViewModel @Inject constructor(
         loadDocuments()
     }
 
-    private fun loadDocuments() {
+    fun loadDocuments() {
         viewModelScope.launch {
             try {
                 val documents = documentRepository.getDocuments()
