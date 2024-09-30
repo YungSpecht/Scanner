@@ -1,13 +1,12 @@
 package com.example.scanner.ui.detailscreen
 
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
+import kotlinx.coroutines.flow.MutableStateFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import data.Document
-import data.DocumentRepository
-import kotlinx.coroutines.flow.MutableStateFlow
+import data.documentstore.Document
+import data.documentstore.DocumentRepository
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,8 +16,8 @@ class DetailScreenViewModel @Inject constructor(
     private val documentRepository: DocumentRepository
 ) : ViewModel() {
 
-    private val _uiState = mutableStateOf<DetailScreenState?>(null)
-    val uiState: State<DetailScreenState?> = _uiState
+    private val _uiState = MutableStateFlow(DetailScreenState())
+    val uiState = _uiState.asStateFlow()
 
     fun loadDocument(documentId: Long) {
         viewModelScope.launch {
@@ -30,31 +29,31 @@ class DetailScreenViewModel @Inject constructor(
     }
 
     fun toggleTitleEdit() {
-        _uiState.value = _uiState.value?.copy(
-            isTitleEditing = !(_uiState.value?.isTitleEditing ?: false)
+        _uiState.value = _uiState.value.copy(
+            isTitleEditing = !(_uiState.value.isTitleEditing ?: false)
         )
     }
 
     fun toggleBillAmountEdit() {
-        _uiState.value = _uiState.value?.copy(
-            isBillAmountEditing = !(_uiState.value?.isBillAmountEditing ?: false)
+        _uiState.value = _uiState.value.copy(
+            isBillAmountEditing = !(_uiState.value.isBillAmountEditing ?: false)
         )
     }
 
     fun updateTitle(newTitle: String) {
-        _uiState.value = _uiState.value?.document?.copy(title = newTitle)?.let {
-            _uiState.value?.copy(
+        _uiState.value = _uiState.value.document?.copy(title = newTitle)?.let {
+            _uiState.value.copy(
                 document = it
             )
-        }
+        }!!
     }
 
     fun updateBillAmount(newAmount: String) {
-        _uiState.value = _uiState.value?.document?.copy(billAmount = newAmount)?.let {
-            _uiState.value?.copy(
+        _uiState.value = _uiState.value.document?.copy(billAmount = newAmount)?.let {
+            _uiState.value.copy(
                 document = it
             )
-        }
+        }!!
     }
     fun saveDocument(document: Document) {
         viewModelScope.launch {
@@ -65,17 +64,17 @@ class DetailScreenViewModel @Inject constructor(
 
     // Save the updated title or bill amount in the repository
     fun saveDocument() {
-        _uiState.value?.let { state ->
+        _uiState.value.let { state ->
             viewModelScope.launch {
-                documentRepository.updateDocument(state.document)
+                state.document?.let { documentRepository.updateDocument(it) }
             }
         }
     }
 
     fun deleteDocument() {
         viewModelScope.launch {
-            _uiState.value?.let { state ->
-                documentRepository.deleteDocument(state.document)
+            _uiState.value.let { state ->
+                state.document?.let { documentRepository.deleteDocument(it) }
             }
         }
     }

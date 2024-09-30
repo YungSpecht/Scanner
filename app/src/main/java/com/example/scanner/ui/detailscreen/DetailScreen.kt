@@ -28,19 +28,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import com.example.scanner.R
-import data.Document
-import java.net.URI
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,11 +48,11 @@ fun DetailScreen(documentId: Long, onDelete: () -> Unit, modifier: Modifier = Mo
         viewModel.loadDocument(documentId)
     }
 
-    val uiState by viewModel.uiState
+    val uiState by viewModel.uiState.collectAsState()
 
     var showDialog by remember { mutableStateOf(false) }
 
-    uiState?.let { state ->
+    uiState.let { state ->
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -80,39 +76,49 @@ fun DetailScreen(documentId: Long, onDelete: () -> Unit, modifier: Modifier = Mo
                 Text(
                     text = stringResource(R.string.title),
                     fontSize = 14.sp,
-                    modifier = Modifier.padding(top = 16.dp, start = 16.dp)
+                    modifier = Modifier
+                        .padding(top = 16.dp, start = 16.dp)
                 )
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    modifier = Modifier.fillMaxWidth()
+                        .clickable { viewModel.toggleTitleEdit() }
+                        .height(85.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     if (state.isTitleEditing) {
-                        TextField(
-                            value = state.document.title,
-                            onValueChange = viewModel::updateTitle,
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(16.dp)
-                        )
-                        Button(onClick = { viewModel.toggleTitleEdit(); viewModel.saveDocument() }) {
+                        state.document?.let {
+                            TextField(
+                                value = it.title,
+                                onValueChange = viewModel::updateTitle,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(16.dp)
+                            )
+                        }
+                        Button(
+                            onClick = { viewModel.toggleTitleEdit(); viewModel.saveDocument() },
+                            modifier = Modifier.padding(16.dp)
+
+                        ) {
                             Text(text = stringResource(R.string.save))
                         }
                     } else {
-                        Text(
-                            text = state.document.title,
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(16.dp)
-                                .clickable { viewModel.toggleTitleEdit() }
-                        )
+                        state.document?.let {
+                            Text(
+                                text = it.title,
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(16.dp)
+                            )
+                        }
                         Icon(
                             Icons.Default.Edit,
                             contentDescription = stringResource(R.string.edit_title),
                             modifier = Modifier
                                 .padding(16.dp)
-                                .clickable { viewModel.toggleTitleEdit() }
                         )
                     }
                 }
@@ -126,36 +132,42 @@ fun DetailScreen(documentId: Long, onDelete: () -> Unit, modifier: Modifier = Mo
                     modifier = Modifier.padding(start = 16.dp)
                 )
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    modifier = Modifier.fillMaxWidth()
+                        .clickable { viewModel.toggleBillAmountEdit() }
+                        .height(85.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     if (state.isBillAmountEditing) {
-                        TextField(
-                            value = state.document.billAmount,
-                            onValueChange = viewModel::updateBillAmount,
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(16.dp)
-                        )
-                        Button(onClick = { viewModel.toggleBillAmountEdit(); viewModel.saveDocument() }) {
+                        state.document?.let {
+                            TextField(
+                                value = it.billAmount,
+                                onValueChange = viewModel::updateBillAmount,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(16.dp)
+                            )
+                        }
+                        Button(
+                            onClick = { viewModel.toggleBillAmountEdit(); viewModel.saveDocument() },
+                            modifier = Modifier.padding(16.dp)
+                        ) {
                             Text(text = stringResource(R.string.save))
                         }
                     } else {
                         Text(
-                            text = state.document.billAmount.toString(),
+                            text = state.document?.billAmount.toString(),
                             fontSize = 22.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(16.dp)
-                                .clickable { viewModel.toggleBillAmountEdit() }
                         )
                         Icon(
                             Icons.Default.Edit,
                             contentDescription = stringResource(R.string.edit_bill_amount),
                             modifier = Modifier
                                 .padding(16.dp)
-                                .clickable { viewModel.toggleBillAmountEdit() }
                         )
                     }
                 }
@@ -168,7 +180,7 @@ fun DetailScreen(documentId: Long, onDelete: () -> Unit, modifier: Modifier = Mo
                     fontSize = 14.sp,
                     modifier = Modifier.padding(start = 16.dp)
                 )
-                state.document.imageUri.let { uri ->
+                state.document?.imageUri.let { uri ->
                     Image(
                         painter = rememberAsyncImagePainter(model = uri),
                         contentDescription = "Scanned Document",

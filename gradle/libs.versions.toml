@@ -3,6 +3,7 @@ agp = "8.6.0"
 androidxNavigationCompose = "1.0"
 androidxNavigationComposeVersion = "2.8.1"
 coilCompose = "2.6.0"
+entityExtraction = "16.0.0-beta5"
 hiltAndroid = "2.51.1"
 hiltAndroidCompiler = "2.52"
 hiltNavigationCompose = "1.2.0"
@@ -36,6 +37,7 @@ androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref =
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+entity-extraction = { module = "com.google.mlkit:entity-extraction", version.ref = "entityExtraction" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroid" }
 hilt-android-compiler-v252 = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }

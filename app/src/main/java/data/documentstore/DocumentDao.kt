@@ -1,4 +1,4 @@
-package data
+package data.documentstore
 
 import androidx.room.Dao
 import androidx.room.Delete

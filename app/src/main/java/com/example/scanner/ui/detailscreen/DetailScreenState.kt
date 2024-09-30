@@ -1,9 +1,9 @@
 package com.example.scanner.ui.detailscreen
 
-import data.Document
+import data.documentstore.Document
 
 data class DetailScreenState(
-    val document: Document,
+    val document: Document? = null,
     val isTitleEditing: Boolean = false,
     val isBillAmountEditing: Boolean = false
 )

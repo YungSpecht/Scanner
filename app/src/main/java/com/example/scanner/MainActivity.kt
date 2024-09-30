@@ -16,6 +16,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.example.scanner.nav.AppNavGraph
 import com.example.scanner.ui.mainscreen.MainScreenViewModel
+import com.example.scanner.ui.theme.ScannerTheme
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.RESULT_FORMAT_JPEG
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.RESULT_FORMAT_PDF
@@ -38,8 +39,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            val navController = rememberNavController()
-            AppNavGraph(navController = navController)
+            ScannerTheme {
+                val navController = rememberNavController()
+                AppNavGraph(navController = navController)
+            }
+
         }
     }
 

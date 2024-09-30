@@ -1,5 +1,6 @@
 package com.example.scanner.ui.addscreen
 
+import android.content.Context
 import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,13 +24,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.scanner.R
 import com.example.scanner.ui.detailscreen.DetailScreenViewModel
-import data.Document
-import java.util.UUID
+import data.documentstore.Document
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.TextField
 import androidx.compose.foundation.Image
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.LocalContext
 import coil.compose.rememberAsyncImagePainter
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,11 +42,17 @@ fun AddDocumentScreen(
     onSave: () -> Unit
 ) {
 
-    val viewModel: DetailScreenViewModel = hiltViewModel()
+    val viewModel: AddDocumentScreenViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsState()
 
-    // TODO Tzvetan fragen ob hier VM mit UIstate gebraucht wird
-    var title by remember { mutableStateOf("") }
-    var billAmount by remember { mutableStateOf("") }
+
+    val con: Context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.processDocument(imageUri, con)
+    }
+
+
 
     Scaffold(
         topBar = {
@@ -54,14 +63,7 @@ fun AddDocumentScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    // TODO Tzvetan fragen ob verlagern auf VM
-                    val newDocument = Document(
-                        id = 0L,
-                        title = title,
-                        billAmount = billAmount,
-                        imageUri = imageUri.toString()
-                    )
-                    viewModel.saveDocument(newDocument)
+                    viewModel.saveDocument(imageUri)
                     onSave()
                 }
             ) {
@@ -71,14 +73,14 @@ fun AddDocumentScreen(
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             TextField(
-                value = title,
-                onValueChange = { title = it },
+                value = uiState.title,
+                onValueChange = viewModel::onTitleChanged,
                 label = { Text(stringResource(R.string.title)) },
                 modifier = Modifier.fillMaxWidth().padding(16.dp)
             )
             TextField(
-                value = billAmount,
-                onValueChange = { billAmount = it },
+                value = uiState.billAmount,
+                onValueChange = viewModel::onBillAmountChanged,
                 label = { Text(stringResource(R.string.extracted_bill_amount)) },
                 modifier = Modifier.fillMaxWidth().padding(16.dp)
             )
@@ -88,13 +90,15 @@ fun AddDocumentScreen(
                 contentDescription = "Scanned Document",
                 modifier = Modifier.fillMaxWidth().height(200.dp)
             )
+            Spacer(modifier = Modifier.height(16.dp))
+            if (uiState.isLoading) {
+                CircularProgressIndicator(modifier = Modifier.padding(16.dp))
+            } else {
+                Text(
+                    text = uiState.recognizedText,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
         }
     }
-}
-
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun AddDocumentScreenPreview() {
-    AddDocumentScreen(Uri.EMPTY, {})
 }

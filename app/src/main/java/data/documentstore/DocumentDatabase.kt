@@ -1,4 +1,4 @@
-package data
+package data.documentstore
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

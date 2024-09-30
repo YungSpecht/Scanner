@@ -55,6 +55,7 @@ android {
 
 dependencies {
 
+    implementation(libs.entity.extraction)
     implementation(libs.play.services.mlkit.text.recognition)
     implementation(libs.androidx.room.ktx)
     kapt("androidx.room:room-compiler:2.6.1")

@@ -1,4 +1,4 @@
-package data
+package data.documentstore
 
 import javax.inject.Inject
 import javax.inject.Singleton
