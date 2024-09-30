@@ -2,7 +2,6 @@ package com.example.scanner.ui.addscreen
 
 import android.content.Context
 import android.net.Uri
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,7 +27,6 @@ class AddDocumentScreenViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                // Call MLKit to process document
                 mlKitProcessor.processDocument(imageUri, context) { recognizedText ->
                     _uiState.value = _uiState.value.copy(
                         recognizedText = recognizedText,
@@ -36,7 +34,6 @@ class AddDocumentScreenViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
-                // Handle any errors during processing
                 _uiState.value = _uiState.value.copy(
                     isLoading = false
                 )
@@ -44,17 +41,14 @@ class AddDocumentScreenViewModel @Inject constructor(
         }
     }
 
-    // Handle title changes
     fun onTitleChanged(newTitle: String) {
         _uiState.value = _uiState.value.copy(title = newTitle)
     }
 
-    // Handle bill amount changes
     fun onBillAmountChanged(newAmount: String) {
         _uiState.value = _uiState.value.copy(billAmount = newAmount)
     }
 
-    // Save the document to the repository
     fun saveDocument(imageUri: Uri) {
         viewModelScope.launch {
             val newDocument = Document(
@@ -66,5 +60,4 @@ class AddDocumentScreenViewModel @Inject constructor(
             documentRepository.addDocument(newDocument)
         }
     }
-
 }

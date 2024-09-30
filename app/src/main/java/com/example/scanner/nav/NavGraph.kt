@@ -23,15 +23,15 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScanner
 @Composable
 fun AppNavGraph(navController: NavHostController) {
 
-    val viewModel: MainScreenViewModel = hiltViewModel()
-    val uiState by viewModel.uiState.collectAsState()
-
     NavHost(
         navController = navController,
         startDestination = NavRoutes.MAIN // Starting screen is MainScreen
     ) {
+
         // Main Screen
-        composable(NavRoutes.MAIN) {
+        composable(
+            route = NavRoutes.MAIN
+        ) {
             MainScreen(
                 onDocumentClick = { id ->
                     navController.navigate(NavRoutes.DOCUMENT + "/$id")
@@ -58,7 +58,7 @@ fun AppNavGraph(navController: NavHostController) {
 
         // Add New Document Screen
         composable(
-            "newDocumentDetail?imageUri={imageUri}",
+            route = "newDocumentDetail?imageUri={imageUri}",
             arguments = listOf(navArgument("imageUri") { type = NavType.StringType })
         ) { backStackEntry ->
             val imageUri = backStackEntry.arguments?.getString("imageUri")?.let { Uri.parse(it) }

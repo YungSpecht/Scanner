@@ -7,7 +7,6 @@ import javax.inject.Singleton
 class DocumentRepository @Inject constructor(
     private val documentDao: DocumentDao
 ) {
-
     suspend fun getDocuments(): List<Document> {
         return documentDao.getDocuments()
     }

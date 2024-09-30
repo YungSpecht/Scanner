@@ -9,12 +9,12 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,20 +29,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.scanner.R
-import data.documentstore.Document
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.RESULT_FORMAT_JPEG
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.SCANNER_MODE_FULL
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
+import data.documentstore.Document
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,30 +59,26 @@ fun MainScreen(onDocumentClick: (Long) -> Unit, onNewDocumentScanned: (Uri) -> U
         contract = ActivityResultContracts.StartIntentSenderForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
-            val result = GmsDocumentScanningResult.fromActivityResultIntent(result.data)
-            if (result != null) {
-                result.getPages()?.let { pages ->
-                    val imageUri = pages.get(0).getImageUri()
-                    // After scanning, navigate to detail screen with the scanned document
+            val resultData = GmsDocumentScanningResult.fromActivityResultIntent(result.data)
+            if (resultData != null) {
+                resultData.pages?.let { pages ->
+                    val imageUri = pages[0].imageUri
                     onNewDocumentScanned(imageUri)
                 }
             }
         }
     }
-
     val options = GmsDocumentScannerOptions.Builder()
         .setGalleryImportAllowed(true)
         .setPageLimit(1)
         .setResultFormats(RESULT_FORMAT_JPEG)
         .setScannerMode(SCANNER_MODE_FULL)
         .build()
-
     val scanner = GmsDocumentScanning.getClient(options)
 
     LaunchedEffect(Unit) {
         viewModel.loadDocuments()
     }
-
 
     Scaffold(
         topBar = {
@@ -100,7 +98,6 @@ fun MainScreen(onDocumentClick: (Long) -> Unit, onNewDocumentScanned: (Uri) -> U
         },
         floatingActionButton = {
             FloatingActionButton(
-                // onClick = onFABClick
                 onClick = {
                     scanner.getStartScanIntent(activity!!)
                         .addOnSuccessListener { intentSender ->
@@ -110,7 +107,12 @@ fun MainScreen(onDocumentClick: (Long) -> Unit, onNewDocumentScanned: (Uri) -> U
                         }
                 }
             ) {
-                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.scan_new_document))
+                Icon(
+                    painter = painterResource(id = R.drawable.document_scanner_24px),// You can choose another icon if desired
+                    contentDescription = "Start Document Scan",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
+                )
             }
         }
     ) { innerPadding ->
@@ -140,17 +142,31 @@ fun DocumentCard(doc: Document, onClick: () -> Unit, modifier: Modifier = Modifi
             .padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
             .clickable(onClick = onClick)
     ) {
-        Column() {
-            Text(
-                text = doc.title,
-                fontSize = (18.sp),
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(16.dp)
-            )
-            Text(
-                text = doc.billAmount,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(start = 16.dp, bottom = 16.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically // Centers content vertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = doc.title,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "${doc.billAmount} €",
+                    fontSize = 16.sp,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
+            Icon(
+                painter = painterResource(id = R.drawable.description_24px),
+                contentDescription = "Document Icon",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .size(36.dp)
+                    .padding(start = 8.dp)
             )
         }
     }
