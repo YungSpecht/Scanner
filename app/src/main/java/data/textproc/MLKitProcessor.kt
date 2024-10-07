@@ -8,6 +8,7 @@ import com.google.mlkit.nl.entityextraction.EntityAnnotation
 import com.google.mlkit.nl.entityextraction.EntityExtraction
 import com.google.mlkit.nl.entityextraction.EntityExtractionParams
 import com.google.mlkit.nl.entityextraction.EntityExtractorOptions
+import com.google.mlkit.nl.entityextraction.MoneyEntity
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
@@ -24,11 +25,11 @@ class MLKitProcessor {
         val image: InputImage
         try {
             image = InputImage.fromFilePath(context, imageUri)
-            val result = recognizer.process(image)
+            recognizer.process(image)
                 .addOnSuccessListener { visionText ->
                     val title = extractTitle(visionText)
                     extractBillAmount(visionText) { billAmount ->
-                        onResult("Suggested Title: $title \nSuggested Bill Amount: $billAmount")
+                        onResult("Suggested Title: $title \nSuggested Bill Amount: $billAmount€")
 
                     }
                 }
@@ -45,12 +46,7 @@ class MLKitProcessor {
     }
 
     private fun extractBillAmount(text: Text, onResult: (String) -> Unit) {
-        var billAmount: String = "No Bill Amount found"
-        val entityExtractor =
-            EntityExtraction.getClient(
-                EntityExtractorOptions.Builder(EntityExtractorOptions.GERMAN)
-                    .build())
-
+        var billAmount: String
         entityExtractor
             .downloadModelIfNeeded()
             .addOnSuccessListener { _ ->
@@ -75,20 +71,25 @@ class MLKitProcessor {
 
     @SuppressLint("DefaultLocale")
     private fun findHighestBillAmount(entityAnnotations: List<EntityAnnotation>): String {
-        var highestBillAmount: Double = 0.0
+        var highestBillAmount = 0.0
 
         for (entityAnnotation in entityAnnotations) {
-            val moneyEntity = entityAnnotation.entities[0].asMoneyEntity()
-
-            val integerPart = moneyEntity?.integerPart
-            val fractionalPart = moneyEntity?.fractionalPart
-
-            val billAmount = integerPart!!.toDouble() + fractionalPart!!.toDouble() / 100
+            val billAmount = assembleDouble(entityAnnotation.entities[0].asMoneyEntity())
 
             if (billAmount > highestBillAmount) {
                 highestBillAmount = billAmount
             }
         }
         return String.format("%.2f", highestBillAmount)
+    }
+
+    private fun assembleDouble(moneyEntity: MoneyEntity?): Double {
+        val integerPart = moneyEntity?.integerPart
+        val fractionalPart = moneyEntity?.fractionalPart
+
+        if (integerPart != null && fractionalPart != null) {
+            return integerPart.toDouble() + fractionalPart.toDouble() / 100
+        }
+        return 0.0
     }
 }

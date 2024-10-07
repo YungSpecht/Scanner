@@ -55,9 +55,14 @@ android {
 
 dependencies {
 
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.inline)
+    testImplementation(libs.kotlinx.coroutines.test)
     implementation(libs.entity.extraction)
     implementation(libs.play.services.mlkit.text.recognition)
     implementation(libs.androidx.room.ktx)
+    testImplementation(libs.androidx.runner)
+    testImplementation(libs.androidx.espresso.core)
     //noinspection KaptUsageInsteadOfKsp
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.runtime)

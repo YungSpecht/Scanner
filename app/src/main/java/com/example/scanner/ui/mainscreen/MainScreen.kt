@@ -48,7 +48,7 @@ import data.documentstore.Document
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(onDocumentClick: (Long) -> Unit, onNewDocumentScanned: (Uri) -> Unit, modifier: Modifier = Modifier) {
+fun MainScreen(onDocumentClick: (Long) -> Unit, onNewDocumentScanned: (Uri) -> Unit) {
 
     val viewModel: MainScreenViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
@@ -124,8 +124,7 @@ fun MainScreen(onDocumentClick: (Long) -> Unit, onNewDocumentScanned: (Uri) -> U
             items(uiState.documents) { document ->
                 DocumentCard(
                     doc = document,
-                    onClick = { onDocumentClick(document.id) },
-                    modifier = Modifier
+                    onClick = { onDocumentClick(document.id) }
                 )
             }
         }
@@ -133,7 +132,7 @@ fun MainScreen(onDocumentClick: (Long) -> Unit, onNewDocumentScanned: (Uri) -> U
 }
 
 @Composable
-fun DocumentCard(doc: Document, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun DocumentCard(doc: Document, onClick: () -> Unit) {
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
@@ -155,7 +154,7 @@ fun DocumentCard(doc: Document, onClick: () -> Unit, modifier: Modifier = Modifi
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "${doc.billAmount} €",
+                    text = "${doc.billAmount}€",
                     fontSize = 16.sp,
                     modifier = Modifier.padding(top = 4.dp)
                 )

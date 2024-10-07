@@ -1,23 +1,15 @@
 package com.example.scanner.nav
 
 import android.net.Uri
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.IntentSenderRequest
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.scanner.MainActivity
 import com.example.scanner.ui.addscreen.AddDocumentScreen
 import com.example.scanner.ui.detailscreen.DetailScreen
 import com.example.scanner.ui.mainscreen.MainScreen
-import com.example.scanner.ui.mainscreen.MainScreenViewModel
-import com.google.mlkit.vision.documentscanner.GmsDocumentScanner
 
 
 @Composable
