@@ -21,6 +21,7 @@ This Android app is a modern document scanner that leverages the [Jetpack Compos
 - **Android SDK**
 - **Jetpack Compose**
 - **Dagger Hilt**
+- **Room**
 - **Google ML Kit** (for OCR and document scanning)
 - **MVVM Architecture**
 
