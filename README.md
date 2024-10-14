@@ -1,5 +1,5 @@
 # Document Scanner App
-![App Sceenshot](https://i.imgur.com/iPv9T5i.png)
+![App Sceenshot](https://i.imgur.com/ATl8egX.png)
 
 ## Overview
 
