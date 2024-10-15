@@ -28,7 +28,10 @@ class AddDocumentScreenViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 mlKitProcessor.processDocument(imageUri, context) { recognizedText ->
+                    val extracted = recognizedText.split("|")
                     _uiState.value = _uiState.value.copy(
+                        title = extracted[0],
+                        billAmount = extracted[1],
                         recognizedText = recognizedText,
                         isLoading = false
                     )

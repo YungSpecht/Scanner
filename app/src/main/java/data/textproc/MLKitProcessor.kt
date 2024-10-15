@@ -3,6 +3,7 @@ package data.textproc
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
+import androidx.annotation.VisibleForTesting
 import com.google.mlkit.nl.entityextraction.Entity
 import com.google.mlkit.nl.entityextraction.EntityAnnotation
 import com.google.mlkit.nl.entityextraction.EntityExtraction
@@ -29,7 +30,7 @@ class MLKitProcessor {
                 .addOnSuccessListener { visionText ->
                     val title = extractTitle(visionText)
                     extractBillAmount(visionText) { billAmount ->
-                        onResult("Suggested Title: $title \nSuggested Bill Amount: $billAmount€")
+                        onResult("$title|$billAmount")
 
                     }
                 }
@@ -39,10 +40,6 @@ class MLKitProcessor {
         } catch (e: IOException) {
             e.printStackTrace()
         }
-    }
-
-    private fun extractTitle(text: Text): String {
-        return text.textBlocks[0].lines[0].text
     }
 
     private fun extractBillAmount(text: Text, onResult: (String) -> Unit) {
@@ -69,27 +66,41 @@ class MLKitProcessor {
             }
     }
 
-    @SuppressLint("DefaultLocale")
-    private fun findHighestBillAmount(entityAnnotations: List<EntityAnnotation>): String {
-        var highestBillAmount = 0.0
+    companion object {
 
-        for (entityAnnotation in entityAnnotations) {
-            val billAmount = assembleDouble(entityAnnotation.entities[0].asMoneyEntity())
-
-            if (billAmount > highestBillAmount) {
-                highestBillAmount = billAmount
+        @VisibleForTesting
+        fun extractTitle(text: Text): String {
+            if(text.textBlocks.size > 0) {
+                return text.textBlocks[0].lines[0].text
             }
+            return "No title found"
         }
-        return String.format("%.2f", highestBillAmount)
-    }
 
-    private fun assembleDouble(moneyEntity: MoneyEntity?): Double {
-        val integerPart = moneyEntity?.integerPart
-        val fractionalPart = moneyEntity?.fractionalPart
+        @VisibleForTesting
+        fun assembleDouble(moneyEntity: MoneyEntity?): Double {
+            val integerPart = moneyEntity?.integerPart
+            val fractionalPart = moneyEntity?.fractionalPart
 
-        if (integerPart != null && fractionalPart != null) {
-            return integerPart.toDouble() + fractionalPart.toDouble() / 100
+            if (integerPart != null && fractionalPart != null) {
+                return integerPart.toDouble() + fractionalPart.toDouble() / 100
+            }
+            return 0.0
         }
-        return 0.0
+
+        @VisibleForTesting
+        @SuppressLint("DefaultLocale")
+        fun findHighestBillAmount(entityAnnotations: List<EntityAnnotation>): String {
+            var highestBillAmount = 0.0
+
+            for (entityAnnotation in entityAnnotations) {
+                val billAmount = assembleDouble(entityAnnotation.entities[0].asMoneyEntity())
+
+                if (billAmount > highestBillAmount) {
+                    highestBillAmount = billAmount
+                }
+            }
+            return String.format("%.2f", highestBillAmount)
+        }
+
     }
 }

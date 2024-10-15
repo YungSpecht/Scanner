@@ -12,6 +12,7 @@ import com.google.mlkit.nl.entityextraction.EntityExtractor
 import com.google.mlkit.nl.entityextraction.EntityExtraction
 import com.google.mlkit.nl.entityextraction.EntityExtractionParams
 import com.google.mlkit.nl.entityextraction.MoneyEntity
+import data.textproc.MLKitProcessor
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -26,7 +27,15 @@ import java.io.IOException
 class ExampleUnitTest {
 
     @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+    fun moneyConversion_isCorrect() {
+        val monEnt = MoneyEntity("Euro", 45, 123)
+        val converted = MLKitProcessor.assembleDouble(monEnt)
+
+        assertEquals(123.45, converted, 0.0001)
+    }
+
+    @Test
+    fun extractTitle_isCorrect() {
+
     }
 }

@@ -4,10 +4,12 @@ import android.content.Context
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.CircularProgressIndicator
@@ -24,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -85,28 +88,41 @@ fun AddDocumentScreen(
                 value = uiState.title,
                 onValueChange = viewModel::onTitleChanged,
                 label = { Text(stringResource(R.string.title)) },
-                modifier = Modifier.fillMaxWidth().padding(16.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
             )
             TextField(
                 value = uiState.billAmount,
                 onValueChange = viewModel::onBillAmountChanged,
                 label = { Text(stringResource(R.string.extracted_bill_amount)) },
-                modifier = Modifier.fillMaxWidth().padding(16.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
             Image(
                 painter = rememberAsyncImagePainter(model = imageUri),
                 contentDescription = "Scanned Document",
-                modifier = Modifier.fillMaxWidth().height(200.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
             if (uiState.isLoading) {
-                CircularProgressIndicator(modifier = Modifier.padding(16.dp))
-            } else {
-                Text(
-                    text = uiState.recognizedText,
-                    modifier = Modifier.padding(16.dp)
-                )
+                Row (
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Extracting Information... Please wait",
+                        modifier = Modifier.padding(start = 20.dp, end = 16.dp, top = 16.dp, bottom = 16.dp)
+                    )
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.primary,
+                        strokeWidth = 1.dp,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
             }
         }
     }
